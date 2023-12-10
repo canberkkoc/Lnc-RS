@@ -1,4 +1,4 @@
-use iced::alignment::{self, Alignment};
+use iced::alignment::Alignment;
 use iced::theme::Theme;
 use iced::widget::{row, text_input};
 use iced::{window, Element, Length, Sandbox, Settings};
@@ -9,6 +9,7 @@ pub fn gui_run() -> iced::Result {
             size: (300, 40),
             resizable: (false),
             decorations: (false),
+            position: window::Position::Centered,
             ..Default::default()
         },
         ..Default::default()
