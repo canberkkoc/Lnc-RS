@@ -1,3 +1,5 @@
-fn main() {
-    println!("Hello, I'm lnc-rs!");
+mod gui;
+
+pub fn main() {
+    let _ = gui::gui_run();
 }
