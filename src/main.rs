@@ -1,9 +1,13 @@
-use filter::filter_entries;
-
 mod gui;
 mod filter;
+
+use filter::{filter_entries, get_desktop_entries};
+use gui::gui_run;
+
 pub fn main() {
-    let entry_vector = filter::get_desktop_entries();
-    filter_entries(entry_vector, "fr");
-    let _ = gui::gui_run();
+    filter_entries(get_desktop_entries(), "fr");
+    match gui_run(){
+        Ok(()) => (),
+        error => println!("{:?}", error)
+    }
 }
