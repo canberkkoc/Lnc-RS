@@ -1,23 +1,22 @@
+use std::fs;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
-use std::fs;
-
-use freedesktop_desktop_entry::{default_paths, DesktopEntry, Iter, PathSource};
+use freedesktop_desktop_entry::{default_paths, DesktopEntry, Iter};
 
 
 pub fn get_desktop_entries() -> Vec<String>{
-    let mut vectore = Vec::new();
+    let mut entry_vector = Vec::new();
     for path in Iter::new(default_paths()) {
-        let path_src = PathSource::guess_from(&path);
         if let Ok(bytes) = fs::read_to_string(&path) {
             if let Ok(entry) = DesktopEntry::decode(&path, &bytes) {
-                if let Some(entriname) = entry.name(None){
-                    vectore.push(entriname.to_string());
-                };
+                match entry.name(None){
+                    Some(val) => entry_vector.push(val.to_string()),
+                    _ => ()
+                }
             }
         }
     }
-    vectore
+    entry_vector
 }
 
 
