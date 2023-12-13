@@ -76,9 +76,10 @@ impl Application for Searcher {
             Message::Executed => {
                 match self.filtered_desktop_entries.first() {
                     Some(val) => {
-                            process::Command::new("sh")
+                        let cmd_string = format!("exec {}", val.exec_path);
+                        process::Command::new("sh")
                             .arg("-c")
-                            .arg(val.exec_path.clone())
+                            .arg(cmd_string)
                             .spawn()
                             .expect("Can not execute");
                         window::close()
