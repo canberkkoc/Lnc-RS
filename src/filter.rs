@@ -1,13 +1,20 @@
 use freedesktop_desktop_entry::{default_paths, DesktopEntry, Iter};
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
+use std::fmt::Display;
 use std::fs;
 
 #[derive(Debug, Clone, Default)]
 pub struct FilteredEntry {
-    name: String,
-    exec_path: String,
-    icon_path: String,
+    pub name: String,
+    pub exec_path: String,
+    pub icon_path: String,
+}
+
+impl Display for FilteredEntry {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name)
+    }
 }
 
 pub fn get_desktop_entries() -> Vec<FilteredEntry> {
@@ -39,7 +46,7 @@ pub fn filter_entries(
     app_entries: Vec<FilteredEntry>,
     search_for: &str,
     limit_entry_count: i32,
-) -> Vec<(i64, FilteredEntry)> {
+) -> Vec<FilteredEntry> {
     let mut entry_vector: Vec<(i64, FilteredEntry)> = Vec::new();
     let matcher = SkimMatcherV2::default();
 
@@ -50,7 +57,10 @@ pub fn filter_entries(
     }
     entry_vector.sort_by(|a, b| b.0.cmp(&a.0));
     match limit_entry_count {
-        0 => entry_vector,
-        val => entry_vector[0..usize::try_from(val).unwrap()].to_vec(),
+        0 => entry_vector.iter().map(|x| x.1.clone()).collect(),
+        val => entry_vector[0..usize::try_from(val).unwrap()]
+            .into_iter()
+            .map(|x| x.1.clone())
+            .collect(),
     }
 }
