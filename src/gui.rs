@@ -78,7 +78,6 @@ impl Application for Searcher {
                     Some(val) => {
                             process::Command::new("sh")
                             .arg("-c")
-                            // TODO: handle 0 length vector
                             .arg(val.exec_path.clone())
                             .spawn()
                             .expect("Can not execute");
