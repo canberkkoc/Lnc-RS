@@ -74,14 +74,17 @@ impl Application for Searcher {
                 text_input::focus(self.input_id.clone())
             }
             Message::Executed => {
-                println!("{:?}", self.filtered_desktop_entries[0]);
-                process::Command::new("sh")
-                    .arg("-c")
-                    // TODO: handle 0 length vector
-                    .arg(self.filtered_desktop_entries.first().unwrap().exec_path.clone())
-                    .spawn()
-                    .expect("Can not execute");
-                window::close()
+                match self.filtered_desktop_entries.first() {
+                    Some(val) => {
+                            process::Command::new("sh")
+                            .arg("-c")
+                            .arg(val.exec_path.clone())
+                            .spawn()
+                            .expect("Can not execute");
+                        window::close()
+                    }
+                    _ => Command::none()
+                }
             }
             Message::Exited => {
                 window::close()
