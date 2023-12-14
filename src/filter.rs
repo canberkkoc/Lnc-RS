@@ -17,6 +17,18 @@ impl Display for FilteredEntry {
     }
 }
 
+fn sanitize_exec(exec: &str) -> String {
+    let mut exec_path = String::new();
+    for ch in exec.chars() {
+        match ch {
+            // Ignore all parameter
+            '%' => break,
+            _ => exec_path.push(ch),
+        }
+    }
+    return exec_path
+}
+
 pub fn get_desktop_entries() -> Vec<FilteredEntry> {
     let mut entry_vector = Vec::new();
     for path in Iter::new(default_paths()) {
@@ -28,7 +40,7 @@ pub fn get_desktop_entries() -> Vec<FilteredEntry> {
                     _ => (),
                 }
                 match entry.exec() {
-                    Some(val) => tmp_obj.exec_path = val.to_string(),
+                    Some(val) => tmp_obj.exec_path = sanitize_exec(val),
                     _ => (),
                 }
                 match entry.icon() {
