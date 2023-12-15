@@ -1,9 +1,11 @@
 use iced::alignment::Alignment;
-use iced::keyboard::KeyCode;
 use iced::event::{self, Event};
+use iced::keyboard::KeyCode;
 use iced::theme::Theme;
 use iced::widget::{row, text_input};
-use iced::{executor, keyboard, window, subscription, Command, Event as AppEvent, Subscription, Application};
+use iced::{
+    executor, keyboard, subscription, window, Application, Command, Event as AppEvent, Subscription,
+};
 use iced::{Element, Length, Settings};
 use std::process;
 
@@ -36,7 +38,7 @@ enum Message {
     InputChanged(String),
     WindowOpened,
     Executed,
-    Exited
+    Exited,
 }
 
 impl Application for Searcher {
@@ -70,26 +72,20 @@ impl Application for Searcher {
                 println!("{:?}", self.filtered_desktop_entries);
                 Command::none()
             }
-            Message::WindowOpened => {
-                text_input::focus(self.input_id.clone())
-            }
-            Message::Executed => {
-                match self.filtered_desktop_entries.first() {
-                    Some(val) => {
-                        let cmd_string = format!("exec {}", val.exec_path);
-                        process::Command::new("sh")
-                            .arg("-c")
-                            .arg(cmd_string)
-                            .spawn()
-                            .expect("Can not execute");
-                        window::close()
-                    }
-                    _ => Command::none()
+            Message::WindowOpened => text_input::focus(self.input_id.clone()),
+            Message::Executed => match self.filtered_desktop_entries.first() {
+                Some(val) => {
+                    let cmd_string = format!("exec {}", val.exec_path);
+                    process::Command::new("sh")
+                        .arg("-c")
+                        .arg(cmd_string)
+                        .spawn()
+                        .expect("Can not execute");
+                    window::close()
                 }
-            }
-            Message::Exited => {
-                window::close()
-            }
+                _ => Command::none(),
+            },
+            Message::Exited => window::close(),
         }
     }
 
@@ -111,21 +107,20 @@ impl Application for Searcher {
             (
                 Event::Keyboard(keyboard::Event::KeyPressed {
                     key_code: KeyCode::Enter,
-                    modifiers: _
+                    modifiers: _,
                 }),
                 event::Status::Ignored,
             ) => Some(Message::Executed),
             (
                 Event::Keyboard(keyboard::Event::KeyPressed {
                     key_code: KeyCode::Escape,
-                    modifiers: _
+                    modifiers: _,
                 }),
                 event::Status::Ignored,
             ) => Some(Message::Exited),
-            (
-                AppEvent::Window(window::Event::Focused), 
-                event::Status::Ignored,
-            ) => Some(Message::WindowOpened),
+            (AppEvent::Window(window::Event::Focused), event::Status::Ignored) => {
+                Some(Message::WindowOpened)
+            }
             _ => None,
         })
     }
