@@ -26,7 +26,7 @@ fn sanitize_exec(exec: &str) -> String {
             _ => exec_path.push(ch),
         }
     }
-    return exec_path
+    return exec_path;
 }
 
 pub fn get_desktop_entries() -> Vec<FilteredEntry> {
@@ -34,18 +34,18 @@ pub fn get_desktop_entries() -> Vec<FilteredEntry> {
     for path in Iter::new(default_paths()) {
         if let Ok(bytes) = fs::read_to_string(&path) {
             if let Ok(entry) = DesktopEntry::decode(&path, &bytes) {
+                if entry.terminal() {
+                    continue;
+                }
                 let mut tmp_obj = FilteredEntry::default();
-                match entry.name(None) {
-                    Some(val) => tmp_obj.name = val.to_string(),
-                    _ => (),
+                if let Some(val) = entry.name(None) {
+                    tmp_obj.name = val.to_string()
                 }
-                match entry.exec() {
-                    Some(val) => tmp_obj.exec_path = sanitize_exec(val),
-                    _ => (),
+                if let Some(val) = entry.exec() {
+                    tmp_obj.exec_path = sanitize_exec(val)
                 }
-                match entry.icon() {
-                    Some(val) => tmp_obj.icon_path = val.to_string(),
-                    _ => (),
+                if let Some(val) = entry.icon() {
+                    tmp_obj.icon_path = val.to_string()
                 }
                 entry_vector.push(tmp_obj)
             }
